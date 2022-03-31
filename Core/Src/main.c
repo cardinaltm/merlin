@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "i2c.h"
 #include "tim.h"
 #include "usart.h"
@@ -28,6 +29,8 @@
 #include <stdio.h>
 #include "mpu6050.h"
 #include "bmp280.h"
+#include "esp8266.h"
+#include "flight.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,6 +60,7 @@ float pressure, temperature, humidity;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -147,41 +151,48 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
-	/* USER CODE BEGIN 1 */
+  /* USER CODE BEGIN 1 */
 
-	/* USER CODE END 1 */
+  /* USER CODE END 1 */
 
-	/* MCU Configuration--------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-	/* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
 
-	/* USER CODE END Init */
+  /* USER CODE END Init */
 
-	/* Configure the system clock */
-	SystemClock_Config();
+  /* Configure the system clock */
+  SystemClock_Config();
 
-	/* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN SysInit */
 
-	/* USER CODE END SysInit */
+  /* USER CODE END SysInit */
 
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_I2C1_Init();
-	MX_I2C2_Init();
-	MX_TIM1_Init();
-	MX_TIM2_Init();
-	MX_USART1_UART_Init();
-	MX_I2C3_Init();
-	MX_USART2_UART_Init();
-	/* USER CODE BEGIN 2 */
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_I2C1_Init();
+  MX_I2C2_Init();
+  MX_TIM1_Init();
+  MX_TIM2_Init();
+  MX_USART1_UART_Init();
+  MX_I2C3_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
+  /* USER CODE BEGIN 2 */
+
+	// Initialize Flight Controller
+	FC_Init();
+
+	// Switch Flight Mode
+	fsmState = FSM_TAKEOFF;
 
 	printf("------- Start Software -------\r\n");
 
@@ -213,11 +224,6 @@ int main(void)
 	bool bme280p = bmp280.id == BME280_CHIP_ID;
 	printf("BMP280: found %s\r\n", bme280p ? "BME280" : "BMP280");
 
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // MOTOR_FRONT_RIGHT
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // MOTOR_BACK_RIGHT
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // MOTOR_FRONT_LEFT
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); // MOTOR_BACK_LEFT
-	printf("------- Initialize Motors -------\r\n");
 	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // RECEIVER_THROTTLE
 	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2); // RECEIVER_YAW
 	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_3); // RECEIVER_PITCH
@@ -233,87 +239,66 @@ int main(void)
 	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 1000);
 	printf("------- Set Default Motor Wid -------\r\n");
 
-	/* USER CODE END 2 */
+  /* USER CODE END 2 */
 
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
+  /* Init scheduler */
+  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  MX_FREERTOS_Init();
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		/* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-		/* USER CODE BEGIN 3 */
-
-		MPU6050_Read_All(&hi2c1, &MPU6050);
-		HAL_Delay(100);
-		printf("MPU6050: Accel(X: %.3f, Y: %.3f, Z: %.3f) Gyro(X: %.3f, Y: %.3f, Z: %.3f) Kalman(X: %.3f, Y: %.3f) Temperature(%.3f)\r\n", MPU6050.Ax, MPU6050.Ay, MPU6050.Az, MPU6050.Gx, MPU6050.Gy, MPU6050.Gz, MPU6050.KalmanAngleX, MPU6050.KalmanAngleY, MPU6050.Temperature);
-		HAL_Delay(200);
-
-//		while (!bmp280_read_float(&bmp280, &temperature, &pressure, &humidity))
-//		{
-//			printf("Temperature/pressure reading failed\n");
-//			HAL_Delay(2000);
-//		}
-
-		printf("BMP280: Pressure: %.2f Pa, Temperature: %.2f C", pressure, temperature);
-		if (bme280p)
-		{
-			printf(", Humidity: %.2f\r\n", humidity);
-		}
-		else
-		{
-			printf("\r\n");
-		}
-
-		printf("RECEIVER: Frequency: %.2f, throttlePercent: %.2f, Pulse Width: %lu\r\n", frequency, throttlePercent, (unsigned long) receiverThrottleDifference);
-
-		HAL_GPIO_TogglePin(LED_D2_GPIO_Port, LED_D2_Pin);
-
-		HAL_Delay(2000);
-
+    /* USER CODE BEGIN 3 */
 	}
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
-	RCC_OscInitTypeDef RCC_OscInitStruct =
-	{ 0 };
-	RCC_ClkInitTypeDef RCC_ClkInitStruct =
-	{ 0 };
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-	/** Configure the main internal regulator output voltage
-	 */
-	__HAL_RCC_PWR_CLK_ENABLE();
-	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  /** Configure the main internal regulator output voltage
+  */
+  __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-	/** Initializes the RCC Oscillators according to the specified parameters
-	 * in the RCC_OscInitTypeDef structure.
-	 */
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-	RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-	{
-		Error_Handler();
-	}
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
-	/** Initializes the CPU, AHB and APB buses clocks
-	 */
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
-	{
-		Error_Handler();
-	}
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 /* USER CODE BEGIN 4 */
@@ -321,18 +306,39 @@ void SystemClock_Config(void)
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM14 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM14) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
+
+/**
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
-	/* USER CODE BEGIN Error_Handler_Debug */
+  /* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1)
 	{
 	}
-	/* USER CODE END Error_Handler_Debug */
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT

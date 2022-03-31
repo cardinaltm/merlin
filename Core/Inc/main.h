@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2022 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.h
+ * @brief          : Header for main.c file.
+ *                   This file contains the common defines of the application.
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2022 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -31,7 +31,6 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -53,7 +52,6 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -61,8 +59,8 @@ void Error_Handler(void);
 #define BUTTON_K1_GPIO_Port GPIOE
 #define BUTTON_K0_Pin GPIO_PIN_4
 #define BUTTON_K0_GPIO_Port GPIOE
-#define RECEIVER_TROTTLE_Pin GPIO_PIN_0
-#define RECEIVER_TROTTLE_GPIO_Port GPIOA
+#define RECEIVER_THROTTLE_Pin GPIO_PIN_0
+#define RECEIVER_THROTTLE_GPIO_Port GPIOA
 #define RECEIVER_YAW_Pin GPIO_PIN_1
 #define RECEIVER_YAW_GPIO_Port GPIOA
 #define RECEIVER_PITCH_Pin GPIO_PIN_2
@@ -87,6 +85,10 @@ void Error_Handler(void);
 #define BMP280_SCL_GPIO_Port GPIOB
 #define BMP280_SDA_Pin GPIO_PIN_11
 #define BMP280_SDA_GPIO_Port GPIOB
+#define ESP8266_TX_Pin GPIO_PIN_8
+#define ESP8266_TX_GPIO_Port GPIOD
+#define ESP8266_RX_Pin GPIO_PIN_9
+#define ESP8266_RX_GPIO_Port GPIOD
 #define HMC5983_SDA_Pin GPIO_PIN_9
 #define HMC5983_SDA_GPIO_Port GPIOC
 #define HMC5983_SCL_Pin GPIO_PIN_8

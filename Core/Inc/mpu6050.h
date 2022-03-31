@@ -1,8 +1,8 @@
 /*
- * mpu6050.h
+ * bmp280.c
  *
- *  Created on: Nov 13, 2019
- *      Author: Bulanov Konstantin
+ *  Created on: Mar 31, 2022
+ *      Author: cardinal
  */
 
 #ifndef INC_GY521_H_
