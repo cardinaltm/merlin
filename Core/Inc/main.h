@@ -31,6 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -52,6 +53,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -71,8 +73,12 @@ void Error_Handler(void);
 #define LED_D2_GPIO_Port GPIOA
 #define LED_D3_Pin GPIO_PIN_7
 #define LED_D3_GPIO_Port GPIOA
-#define LED_OUT_Pin GPIO_PIN_4
-#define LED_OUT_GPIO_Port GPIOC
+#define LIGHT_BELOW_Pin GPIO_PIN_4
+#define LIGHT_BELOW_GPIO_Port GPIOC
+#define SONAR_ECHO_FRONT_Pin GPIO_PIN_0
+#define SONAR_ECHO_FRONT_GPIO_Port GPIOB
+#define SONAR_ECHO_BACK_Pin GPIO_PIN_1
+#define SONAR_ECHO_BACK_GPIO_Port GPIOB
 #define MOTOR_FRONT_RIGHT_Pin GPIO_PIN_9
 #define MOTOR_FRONT_RIGHT_GPIO_Port GPIOE
 #define MOTOR_BACK_RIGHT_Pin GPIO_PIN_11
@@ -85,10 +91,18 @@ void Error_Handler(void);
 #define BMP280_SCL_GPIO_Port GPIOB
 #define BMP280_SDA_Pin GPIO_PIN_11
 #define BMP280_SDA_GPIO_Port GPIOB
+#define SONAR_TRIGGER_Pin GPIO_PIN_15
+#define SONAR_TRIGGER_GPIO_Port GPIOB
 #define ESP8266_TX_Pin GPIO_PIN_8
 #define ESP8266_TX_GPIO_Port GPIOD
 #define ESP8266_RX_Pin GPIO_PIN_9
 #define ESP8266_RX_GPIO_Port GPIOD
+#define SONAR_ECHO_DOWN_Pin GPIO_PIN_12
+#define SONAR_ECHO_DOWN_GPIO_Port GPIOD
+#define SONAR_ECHO_LEFT_Pin GPIO_PIN_6
+#define SONAR_ECHO_LEFT_GPIO_Port GPIOC
+#define SONAR_ECHO_RIGHT_Pin GPIO_PIN_7
+#define SONAR_ECHO_RIGHT_GPIO_Port GPIOC
 #define HMC5983_SDA_Pin GPIO_PIN_9
 #define HMC5983_SDA_GPIO_Port GPIOC
 #define HMC5983_SCL_Pin GPIO_PIN_8

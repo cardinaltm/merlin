@@ -27,7 +27,7 @@ double mu(int8_t x, int8_t A)
  * \param[in] deltae значение лингвистической переменной "отклонение" первой разности ошибки
  * \param[in] then значение лингвистической переменной "воздействие"
  */
-double addrule(int8_t fe, op_type op, int8_t fde, int8_t z)
+void addrule(int8_t fe, op_type op, int8_t fde, int8_t z)
 {
 	rules[numofrules].fe = fe;
 	rules[numofrules].op = op;
@@ -44,7 +44,7 @@ double addrule(int8_t fe, op_type op, int8_t fde, int8_t z)
  */
 double getFuzzyConclusion(int8_t e, int8_t de)
 {
-	double summ_alpha_c = 0, sum_alpha = 0;
+	double summ_alpha_c = 0, summ_alpha = 0;
 	// цикл по правилам
 	for (int i = 0; i < (int) (numofrules); i++)
 	{

@@ -56,7 +56,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, LED_D2_Pin|LED_D3_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_OUT_GPIO_Port, LED_OUT_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LIGHT_BELOW_GPIO_Port, LIGHT_BELOW_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(SONAR_TRIGGER_GPIO_Port, SONAR_TRIGGER_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PEPin PEPin */
   GPIO_InitStruct.Pin = BUTTON_K1_Pin|BUTTON_K0_Pin;
@@ -72,11 +75,18 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = LED_OUT_Pin;
+  GPIO_InitStruct.Pin = LIGHT_BELOW_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED_OUT_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(LIGHT_BELOW_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PtPin */
+  GPIO_InitStruct.Pin = SONAR_TRIGGER_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(SONAR_TRIGGER_GPIO_Port, &GPIO_InitStruct);
 
 }
 

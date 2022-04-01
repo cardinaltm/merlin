@@ -7,6 +7,7 @@
 
 #include "flight.h"
 #include "usart.h"
+#include <stdio.h>
 
 void FC_Init()
 {
@@ -94,40 +95,40 @@ void selfStabilizing()
 {
 	// пока работаем только с креном
 	// TODO: добавить ограничения, проверить уже на модели на критических углах
-	int16_t _iRollError = (int16_t) ((_acRoll - RP_Data.aRoll) * 4); // 125/31 * error 31'+ - макцимальная ошибка
-	// приводим к интервалу [-125, 125]
-	int8_t iRollError = constrain(_iRollError, -125, 125);
-	int8_t iDeltaError = constrain(iRollError - iprevRollError, -125, 125);
-	// храним текушую ошибку для составления первой разницы
-	iprevRollError = iRollError;
-
-	// узнаем нечеткий вывод и переводим его в шим для двигателья
-	double dMTh = getFuzzyConclusion(iRollError, iDeltaError) * 8; // 8 = 1000/125 - максимальное исправление в 1000 при...
-
-	// теперь нужно подстроить скорости врашения двигателья
-	// желательно без смены высоты
-	int16_t iPart = (int16_t) (dMTh * 0.5);
-
-	motorFrontRightSpeed = stallSpeed + iPart;
-	motorBackRightSpeed = stallSpeed + iPart;
-	motorFrontLeftSpeed = stallSpeed - iPart;
-	motorBackLeftSpeed = stallSpeed - iPart;
-
-	// проверка для невылета за максимальный диапазон
-	if (motorFrontLeftSpeed > BLDC_MAX_PWM)
-	{
-		int16_t _d = motorFrontLeftSpeed - BLDC_MAX_PWM;
-		motorFrontLeftSpeed = BLDC_MAX_PWM;
-		motorFrontRightSpeed -= _d;
-	}
-	if (motorFrontRightSpeed > BLDC_MAX_PWM)
-	{
-		int16_t _d = motorFrontRightSpeed - BLDC_MAX_PWM;
-		motorFrontRightSpeed = BLDC_MAX_PWM;
-		motorFrontLeftSpeed -= _d;
-	}
-
-	printf("iMTh: %i iRollError %i motorFrontRightSpeed: %i motorBackRightSpeed: %i motorFrontLeftSpeed: %i motorBackLeftSpeed: %i\r\n", (int16_t) (floor(dMTh)), (int16_t) (floor(iRollError)), (int16_t) (floor(motorFrontRightSpeed)), (int16_t) (floor(motorBackRightSpeed)), (int16_t) (floor(motorFrontLeftSpeed)), (int16_t) (floor(motorBackLeftSpeed)));
+//	int16_t _iRollError = (int16_t) ((_acRoll - RP_Data.aRoll) * 4); // 125/31 * error 31'+ - макцимальная ошибка
+//	// приводим к интервалу [-125, 125]
+//	int8_t iRollError = constrain(_iRollError, -125, 125);
+//	int8_t iDeltaError = constrain(iRollError - iprevRollError, -125, 125);
+//	// храним текушую ошибку для составления первой разницы
+//	iprevRollError = iRollError;
+//
+//	// узнаем нечеткий вывод и переводим его в шим для двигателья
+//	double dMTh = getFuzzyConclusion(iRollError, iDeltaError) * 8; // 8 = 1000/125 - максимальное исправление в 1000 при...
+//
+//	// теперь нужно подстроить скорости врашения двигателья
+//	// желательно без смены высоты
+//	int16_t iPart = (int16_t) (dMTh * 0.5);
+//
+//	motorFrontRightSpeed = stallSpeed + iPart;
+//	motorBackRightSpeed = stallSpeed + iPart;
+//	motorFrontLeftSpeed = stallSpeed - iPart;
+//	motorBackLeftSpeed = stallSpeed - iPart;
+//
+//	// проверка для невылета за максимальный диапазон
+//	if (motorFrontLeftSpeed > BLDC_MAX_PWM)
+//	{
+//		int16_t _d = motorFrontLeftSpeed - BLDC_MAX_PWM;
+//		motorFrontLeftSpeed = BLDC_MAX_PWM;
+//		motorFrontRightSpeed -= _d;
+//	}
+//	if (motorFrontRightSpeed > BLDC_MAX_PWM)
+//	{
+//		int16_t _d = motorFrontRightSpeed - BLDC_MAX_PWM;
+//		motorFrontRightSpeed = BLDC_MAX_PWM;
+//		motorFrontLeftSpeed -= _d;
+//	}
+//
+//	printf("iMTh: %i iRollError %i motorFrontRightSpeed: %i motorBackRightSpeed: %i motorFrontLeftSpeed: %i motorBackLeftSpeed: %i\r\n", (int16_t) (floor(dMTh)), (int16_t) (floor(iRollError)), (int16_t) (floor(motorFrontRightSpeed)), (int16_t) (floor(motorBackRightSpeed)), (int16_t) (floor(motorFrontLeftSpeed)), (int16_t) (floor(motorBackLeftSpeed)));
 }
 
 /*

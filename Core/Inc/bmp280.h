@@ -12,6 +12,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define atmPress 101325 //Pa
+
 /**
  * BMP280 or BME280 address is 0x77 if SDO pin is high, and is 0x76 if
  * SDO pin is low.
@@ -113,6 +115,10 @@ typedef struct
 
 } BMP280_HandleTypedef;
 
+extern BMP280_HandleTypedef bmp280;
+extern float pressure, temperature, humidity, altitude;
+extern bool bme280p;
+
 /**
  * Initialize default parameters.
  * Default configuration:
@@ -168,6 +174,6 @@ bool bmp280_read_fixed(BMP280_HandleTypedef *dev, int32_t *temperature, uint32_t
  *  Humidity is optional and only read for the BME280, in percent relative
  *  humidity.
  */
-bool bmp280_read_float(BMP280_HandleTypedef *dev, float *temperature, float *pressure, float *humidity);
+bool bmp280_read_float(BMP280_HandleTypedef *dev, float *temperature, float *pressure, float *humidity, float *altitude);
 
 #endif /* INC_BMP280_H_ */

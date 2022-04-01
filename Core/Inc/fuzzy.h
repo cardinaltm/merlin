@@ -33,7 +33,7 @@ typedef enum
 	AND, OR
 } op_type;
 
-uint8_t numofrules;
+extern uint8_t numofrules;
 
 struct rule
 {
@@ -43,8 +43,9 @@ struct rule
 	int8_t z;
 };
 
-struct rule rules[12];
+extern struct rule rules[12];
 
 void Fuzzy_Init(void);
+double getFuzzyConclusion(int8_t e, int8_t de);
 
 #endif /* INC_FUZZY_H_ */

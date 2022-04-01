@@ -6,6 +6,7 @@
  */
 
 #include "bmp280.h"
+#include <math.h>
 
 /**
  * BMP280 registers
@@ -28,6 +29,10 @@
 #define BMP280_REG_HUM_CALIB   0x88
 
 #define BMP280_RESET_VALUE     0xB6
+
+BMP280_HandleTypedef bmp280;
+float pressure, temperature, humidity, altitude;
+bool bme280p;
 
 void bmp280_init_default_params(bmp280_params_t *params)
 {
@@ -307,7 +312,7 @@ bool bmp280_read_fixed(BMP280_HandleTypedef *dev, int32_t *temperature, uint32_t
 	return true;
 }
 
-bool bmp280_read_float(BMP280_HandleTypedef *dev, float *temperature, float *pressure, float *humidity)
+bool bmp280_read_float(BMP280_HandleTypedef *dev, float *temperature, float *pressure, float *humidity, float *altitude)
 {
 	int32_t fixed_temperature;
 	uint32_t fixed_pressure;
@@ -318,6 +323,7 @@ bool bmp280_read_float(BMP280_HandleTypedef *dev, float *temperature, float *pre
 		*pressure = (float) fixed_pressure / 256;
 		if (humidity)
 			*humidity = (float) fixed_humidity / 1024;
+		*altitude = 44330 * (1 - (pow(((float) *pressure / (float) atmPress), 0.19029495718)));
 		return true;
 	}
 

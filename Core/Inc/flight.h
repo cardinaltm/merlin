@@ -34,7 +34,7 @@ uint16_t motorFrontLeftSpeed;
 uint16_t motorBackLeftSpeed;
 
 uint16_t stallSpeed;
-uint8_t fsmState;
+extern uint8_t fsmState;
 
 void FC_Init();
 void FlightControl();
