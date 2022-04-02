@@ -1,9 +1,11 @@
-/*
- * bmp280.h
- *
- *  Created on: Mar 31, 2022
- *      Author: cardinal
- */
+/**
+ *******************************************************************************
+ * @file   bmp280.h
+ * @author Lasha Valishvili (cardinal_tm)
+ * @email  lvalishvili@icloud.com
+ * @date   Apr 1, 2022
+ *******************************************************************************
+ **/
 
 #ifndef INC_BMP280_H_
 #define INC_BMP280_H_
@@ -11,6 +13,7 @@
 #include "stm32f4xx_hal.h"
 #include <stdint.h>
 #include <stdbool.h>
+#include "sensors.h"
 
 #define atmPress 101325 //Pa
 
@@ -175,5 +178,7 @@ bool bmp280_read_fixed(BMP280_HandleTypedef *dev, int32_t *temperature, uint32_t
  *  humidity.
  */
 bool bmp280_read_float(BMP280_HandleTypedef *dev, float *temperature, float *pressure, float *humidity, float *altitude);
+
+void BMP280_Read(SensorBaro *data);
 
 #endif /* INC_BMP280_H_ */

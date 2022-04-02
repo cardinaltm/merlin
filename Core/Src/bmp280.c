@@ -1,9 +1,11 @@
-/*
- * bmp280.c
- *
- *  Created on: Mar 31, 2022
- *      Author: cardinal
- */
+/**
+ *******************************************************************************
+ * @file   test.h
+ * @author Lasha Valishvili (cardinal_tm)
+ * @email  lvalishvili@icloud.com
+ * @date   Apr 1, 2022
+ *******************************************************************************
+ **/
 
 #include "bmp280.h"
 #include <math.h>
@@ -328,4 +330,9 @@ bool bmp280_read_float(BMP280_HandleTypedef *dev, float *temperature, float *pre
 	}
 
 	return false;
+}
+
+void BMP280_Read(SensorBaro *data)
+{
+
 }

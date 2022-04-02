@@ -6,6 +6,10 @@
  */
 
 #include "fuzzy.h"
+#include <stdio.h>
+
+uint8_t numofrules;
+struct rule rules[12];
 
 /*
  * степень принадлежности uA(x)
@@ -82,14 +86,16 @@ void Fuzzy_Init(void)
 	addrule(fMP, AND, fMN, fLP);
 	addrule(fMP, AND, fMP, fLN);
 
-//	for (int i = 0; i < (int) (numofrules); i++)
-//	{
-//		printf("IF e=%i %s deltae %i THEN output=%i\r\n", rules[i].fe, (rules[i].op == 0 ? "AND" : "OR"), rules[i].fde, rules[i].z);
-//	}
-//
-//	// от обьекта управления
-//	int8_t e = 50;
-//	int8_t de = -30;
-//	printf("e=%i; deltae=%i Z=%f\r\n", e, de, getFuzzyConclusion(e, de));
+	printf("\r\nFuzzy Rules:\r\n");
+	for (int i = 0; i < (int) (numofrules); i++)
+	{
+		printf("IF e=%i %s deltae %i THEN output=%i\r\n", rules[i].fe, (rules[i].op == 0 ? "AND" : "OR"), rules[i].fde, rules[i].z);
+	}
+
+	// от обьекта управления
+	int8_t e = 50;
+	int8_t de = -30;
+	printf("Fuzzy Result:\r\n");
+	printf("e=%i; deltae=%i Z=%f\r\n\r\n", e, de, getFuzzyConclusion(e, de));
 }
 

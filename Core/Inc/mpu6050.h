@@ -1,9 +1,11 @@
-/*
- * bmp280.c
- *
- *  Created on: Mar 31, 2022
- *      Author: cardinal
- */
+/**
+ *******************************************************************************
+ * @file   test.h
+ * @author Lasha Valishvili (cardinal_tm)
+ * @email  lvalishvili@icloud.com
+ * @date   Apr 1, 2022
+ *******************************************************************************
+ **/
 
 #ifndef INC_GY521_H_
 #define INC_GY521_H_
@@ -16,7 +18,6 @@
 // MPU6050 structure
 typedef struct
 {
-
 	int16_t Accel_X_RAW;
 	int16_t Accel_Y_RAW;
 	int16_t Accel_Z_RAW;
