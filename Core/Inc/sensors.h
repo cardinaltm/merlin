@@ -27,9 +27,9 @@ typedef struct SensorGyro
 	int16_t X_RAW;
 	int16_t Y_RAW;
 	int16_t Z_RAW;
-	double X;
-	double Y;
-	double Z;
+	double X; // Yaw
+	double Y; // Pitch
+	double Z; // Roll
 } SensorGyro;
 
 typedef struct SensorMag
@@ -40,6 +40,8 @@ typedef struct SensorMag
 	double X;
 	double Y;
 	double Z;
+	double Pusula;
+	double PusulaOKU;
 } SensorMag;
 
 typedef struct SensorBaro
@@ -57,7 +59,7 @@ typedef struct SensorTemp
 } SensorTemp;
 
 extern struct SensorAcc sensorAcc;
-extern struct SensorGyro sensoGyro;
+extern struct SensorGyro sensorGyro;
 extern struct SensorMag sensorMag;
 extern struct SensorBaro sensorBaro;
 extern struct SensorTemp sensorTemp;

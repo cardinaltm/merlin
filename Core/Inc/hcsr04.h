@@ -1,6 +1,6 @@
 /**
  *******************************************************************************
- * @file   test.h
+ * @file   hcsr04.h
  * @author Lasha Valishvili (cardinal_tm)
  * @email  lvalishvili@icloud.com
  * @date   Apr 1, 2022
@@ -23,5 +23,6 @@ extern uint8_t sonarEchoDownDistance;
 
 void HCSR04_Read(void);
 void HCSR04_Delay(uint16_t time);
+void HCSR04_CaptureCallback(TIM_HandleTypeDef *htim);
 
 #endif /* INC_HCSR04_H_ */

@@ -56,7 +56,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, LED_D2_Pin|LED_D3_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LIGHT_BELOW_GPIO_Port, LIGHT_BELOW_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LIGHT_BELOW_GPIO_Port, LIGHT_BELOW_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SONAR_TRIGGER_GPIO_Port, SONAR_TRIGGER_Pin, GPIO_PIN_RESET);

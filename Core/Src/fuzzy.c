@@ -1,9 +1,11 @@
-/*
- * fuzzy.c
- *
- *  Created on: Mar 31, 2022
- *      Author: cardinal
- */
+/**
+ *******************************************************************************
+ * @file   fuzzy.c
+ * @author Lasha Valishvili (cardinal_tm)
+ * @email  lvalishvili@icloud.com
+ * @date   Apr 1, 2022
+ *******************************************************************************
+ **/
 
 #include "fuzzy.h"
 #include <stdio.h>

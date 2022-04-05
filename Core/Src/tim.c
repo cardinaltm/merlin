@@ -356,7 +356,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     PC6     ------> TIM3_CH1
     PC7     ------> TIM3_CH2
     */
-    GPIO_InitStruct.Pin = SONAR_ECHO_FRONT_Pin|SONAR_ECHO_BACK_Pin;
+    GPIO_InitStruct.Pin = SONAR_ECHO_FRONT_Pin|SONAR_ECHO_REAR_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -389,12 +389,12 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     /**TIM4 GPIO Configuration
     PD12     ------> TIM4_CH1
     */
-    GPIO_InitStruct.Pin = SONAR_BOTTOM_Pin;
+    GPIO_InitStruct.Pin = SONAR_ECHO_BOTTOM_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF2_TIM4;
-    HAL_GPIO_Init(SONAR_BOTTOM_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(SONAR_ECHO_BOTTOM_GPIO_Port, &GPIO_InitStruct);
 
     /* TIM4 interrupt Init */
     HAL_NVIC_SetPriority(TIM4_IRQn, 0, 0);
@@ -486,7 +486,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
     PC6     ------> TIM3_CH1
     PC7     ------> TIM3_CH2
     */
-    HAL_GPIO_DeInit(GPIOB, SONAR_ECHO_FRONT_Pin|SONAR_ECHO_BACK_Pin);
+    HAL_GPIO_DeInit(GPIOB, SONAR_ECHO_FRONT_Pin|SONAR_ECHO_REAR_Pin);
 
     HAL_GPIO_DeInit(GPIOC, SONAR_ECHO_LEFT_Pin|SONAR_ECHO_RIGHT_Pin);
 
@@ -507,7 +507,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
     /**TIM4 GPIO Configuration
     PD12     ------> TIM4_CH1
     */
-    HAL_GPIO_DeInit(SONAR_BOTTOM_GPIO_Port, SONAR_BOTTOM_Pin);
+    HAL_GPIO_DeInit(SONAR_ECHO_BOTTOM_GPIO_Port, SONAR_ECHO_BOTTOM_Pin);
 
     /* TIM4 interrupt Deinit */
     HAL_NVIC_DisableIRQ(TIM4_IRQn);

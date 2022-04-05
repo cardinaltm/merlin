@@ -14,8 +14,10 @@
 #include "usart.h"
 #include "tim.h"
 #include "sensors.h"
+#include "receiver.h"
 
 /*
+ * Defaults:
  const float pidPGainRoll = 1.3;
  const float pidIGainRoll = 0.04;
  const float pidDGainRoll = 18.0;
@@ -50,10 +52,7 @@ const int pidMaxYaw = 400;
 
 int8_t autoLevel = 1;
 
-// Original Inputs
 long accelTotalVector;
-double inputGyroPitch, inputGyroRoll, inputGyroYaw;
-int inputReceiverInputChannel1 = 1500, inputReceiverInputChannel2 = 1500, inputReceiverInputChannel3 = 1400, inputReceiverInputChannel4 = 1500;
 
 int esc1, esc2, esc3, esc4;
 int throttle;
@@ -69,8 +68,8 @@ float angleRollAcc, anglePitchAcc, anglePitch, angleRoll;
 void Flight_Init(void)
 {
 //	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // ESC_FRONT_RIGHT
-//	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // ESC_BACK_RIGHT
-//	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // ESC_BACK_LEFT
+//	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // ESC_REAR_RIGHT
+//	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // ESC_REAR_LEFT
 //	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4); // ESC_FRONT_LEFT
 
 // Starts the PWM signal generation
@@ -80,13 +79,12 @@ void Flight_Init(void)
 		printf("Motors not found\r\n");
 		Error_Handler();
 	}
-	printf("Motors Found\r\n");
 
 	HAL_Delay(100);
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 1000);
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 1000);
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 1000);
-	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 1000);
+	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, MOTOR_THROTTLE_INIT);
+	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, MOTOR_THROTTLE_INIT);
+	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, MOTOR_THROTTLE_INIT);
+	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, MOTOR_THROTTLE_INIT);
 
 	printf("Motors Initialize\r\n");
 	HAL_Delay(1000);
@@ -100,10 +98,10 @@ void Flight_Init(void)
 	// TODO: divide and get average
 
 // Wait until the receiver is active and the throtle is set to the lower position.
-//	while (inputReceiverInputChannel3 < 990 || inputReceiverInputChannel3 > 1020 || inputReceiverInputChannel4 < 1400)
+//	while (receiver.Throttle < 990 || receiver.Throttle > 1020 || receiver.Yaw < 1400)
 //	{
-//		inputReceiverInputChannel3 = convert_receiver_channel(3);                 // Convert the actual receiver signals for throttle to the standard 1000 - 2000us
-//		inputReceiverInputChannel4 = convert_receiver_channel(4);                 // Convert the actual receiver signals for yaw to the standard 1000 - 2000us
+//		receiver.Throttle = convert_receiver_channel(3);                 // Convert the actual receiver signals for throttle to the standard 1000 - 2000us
+//		receiver.Yaw = convert_receiver_channel(4);                 // Convert the actual receiver signals for yaw to the standard 1000 - 2000us
 //		start++;                                                               // While waiting increment start whith every loop.
 //		// We don't want the esc's to be beeping annoyingly. So let's give them a 1000us puls while waiting for the receiver inputs.
 //		// Set digital poort 4, 5, 6 and 7 low.
@@ -124,18 +122,18 @@ void Flight_Control(void)
 {
 	// 65.5 = 1 deg/sec (check the datasheet of the MPU-6050 for more information).
 	// Gyro pid input is deg/sec.
-	gyroRollInput = (gyroRollInput * 0.7) + ((inputGyroRoll / 65.5) * 0.3);
-	gyroPitchInput = (gyroPitchInput * 0.7) + ((inputGyroPitch / 65.5) * 0.3);
-	gyroYawInput = (gyroYawInput * 0.7) + ((inputGyroYaw / 65.5) * 0.3);
+	gyroRollInput = (gyroRollInput * 0.7) + ((sensorGyro.Z / 65.5) * 0.3);
+	gyroPitchInput = (gyroPitchInput * 0.7) + ((sensorGyro.Y / 65.5) * 0.3);
+	gyroYawInput = (gyroYawInput * 0.7) + ((sensorGyro.X / 65.5) * 0.3);
 
 	// Gyro angle calculations
 	// 0.0000611 = 1 / (250Hz / 65.5)
-	anglePitch += inputGyroPitch * 0.0000611;  // Calculate the traveled pitch angle and add this to the anglePitch variable.
-	angleRoll += inputGyroRoll * 0.0000611;  // Calculate the traveled roll angle and add this to the angleRoll variable.
+	anglePitch += sensorGyro.Y * 0.0000611;  // Calculate the traveled pitch angle and add this to the anglePitch variable.
+	angleRoll += sensorGyro.Z * 0.0000611;  // Calculate the traveled roll angle and add this to the angleRoll variable.
 
 	// 0.000001066 = 0.0000611 * (3.142(PI) / 180degr) The Arduino sin function is in radians
-	anglePitch -= angleRoll * sin(inputGyroYaw * 0.000001066); // If the IMU has yawed transfer the roll angle to the pitch angel.
-	angleRoll += anglePitch * sin(inputGyroYaw * 0.000001066); // If the IMU has yawed transfer the pitch angle to the roll angel.
+	anglePitch -= angleRoll * sin(sensorGyro.X * 0.000001066); // If the IMU has yawed transfer the roll angle to the pitch angel.
+	angleRoll += anglePitch * sin(sensorGyro.X * 0.000001066); // If the IMU has yawed transfer the pitch angle to the roll angel.
 
 	// Accelerometer angle calculations
 	accelTotalVector = sqrt((sensorAcc.X * sensorAcc.X) + (sensorAcc.Y * sensorAcc.Y) + (sensorAcc.Z * sensorAcc.Z)); // Calculate the total accelerometer vector.
@@ -172,13 +170,13 @@ void Flight_Control(void)
 	}
 
 	// For starting the motors: throttle low and yaw left (step 1).
-	if (inputReceiverInputChannel3 < 1050 && inputReceiverInputChannel4 < 1050)
+	if (receiver.Throttle < 1050 && receiver.Throttle < 1050)
 	{
 		start = 1;
 	}
 
 	// When yaw stick is back in the center position start the motors (step 2).
-	if (start == 1 && inputReceiverInputChannel3 < 1050 && inputReceiverInputChannel4 > 1450)
+	if (start == 1 && receiver.Throttle < 1050 && receiver.Yaw > 1450)
 	{
 		start = 2;
 
@@ -195,20 +193,20 @@ void Flight_Control(void)
 	}
 
 	// Stopping the motors: throttle low and yaw right.
-	if (start == 2 && inputReceiverInputChannel3 < 1050 && inputReceiverInputChannel4 > 1950)
+	if (start == 2 && receiver.Throttle < 1050 && receiver.Yaw > 1950)
 		start = 0;
 
 	// The PID set point in degrees per second is determined by the roll receiver input.
 	// In the case of deviding by 3 the max roll rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
 	pidRollSetPoint = 0;
 	// We need a little dead band of 16us for better results.
-	if (inputReceiverInputChannel1 > 1508)
+	if (receiver.Roll > 1508)
 	{
-		pidRollSetPoint = inputReceiverInputChannel1 - 1508;
+		pidRollSetPoint = receiver.Roll - 1508;
 	}
-	else if (inputReceiverInputChannel1 < 1492)
+	else if (receiver.Roll < 1492)
 	{
-		pidRollSetPoint = inputReceiverInputChannel1 - 1492;
+		pidRollSetPoint = receiver.Roll - 1492;
 	}
 
 	pidRollSetPoint -= rollLevelAdjust; // Subtract the angle correction from the standardized receiver roll input value.
@@ -218,13 +216,13 @@ void Flight_Control(void)
 	// In the case of deviding by 3 the max pitch rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
 	pidPitchSetPoint = 0;
 	// We need a little dead band of 16us for better results.
-	if (inputReceiverInputChannel2 > 1508)
+	if (receiver.Pitch > 1508)
 	{
-		pidPitchSetPoint = inputReceiverInputChannel2 - 1508;
+		pidPitchSetPoint = receiver.Pitch - 1508;
 	}
-	else if (inputReceiverInputChannel2 < 1492)
+	else if (receiver.Pitch < 1492)
 	{
-		pidPitchSetPoint = inputReceiverInputChannel2 - 1492;
+		pidPitchSetPoint = receiver.Pitch - 1492;
 	}
 
 	pidPitchSetPoint -= pitchLevelAdjust; // Subtract the angle correction from the standardized receiver pitch input value.
@@ -234,15 +232,15 @@ void Flight_Control(void)
 	// In the case of deviding by 3 the max yaw rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
 	pidYawSetPoint = 0;
 	// We need a little dead band of 16us for better results.
-	if (inputReceiverInputChannel3 > 1050)
+	if (receiver.Throttle > 1050)
 	{ // Do not yaw when turning off the motors.
-		if (inputReceiverInputChannel4 > 1508)
+		if (receiver.Yaw > 1508)
 		{
-			pidYawSetPoint = (inputReceiverInputChannel4 - 1508) / 3.0;
+			pidYawSetPoint = (receiver.Yaw - 1508) / 3.0;
 		}
-		else if (inputReceiverInputChannel4 < 1492)
+		else if (receiver.Yaw < 1492)
 		{
-			pidYawSetPoint = (inputReceiverInputChannel4 - 1492) / 3.0;
+			pidYawSetPoint = (receiver.Yaw - 1492) / 3.0;
 		}
 	}
 
@@ -258,15 +256,15 @@ void Flight_Control(void)
 //	if (battery_voltage < 1000 && battery_voltage > 600)
 //		digitalWrite(12, HIGH);
 
-	throttle = inputReceiverInputChannel3; // We need the throttle signal as a base signal.
+	throttle = receiver.Throttle; // We need the throttle signal as a base signal.
 
 	// The motors are started.
 //	if (start == 2)
 //	{
-	if (throttle > 1800)
+	if (throttle > MOTOR_THROTTLE_LIMIT)
 	{
 		// We need some room to keep full control at full throttle.
-		throttle = 1800;
+		throttle = MOTOR_THROTTLE_LIMIT;
 	}
 
 	esc1 = throttle - pidOutputPitch + pidOutputRoll - pidOutputYaw; // Calculate the pulse for esc 1 (front-right - CCW)
@@ -295,14 +293,14 @@ void Flight_Control(void)
 		esc4 = 1100;
 
 	// Limit the esc-1/2/3/4 pulse to 2000us.
-	if (esc1 > 2000)
-		esc1 = 2000;
-	if (esc2 > 2000)
-		esc2 = 2000;
-	if (esc3 > 2000)
-		esc3 = 2000;
-	if (esc4 > 2000)
-		esc4 = 2000;
+	if (esc1 > MOTOR_THROTTLE_MAX)
+		esc1 = MOTOR_THROTTLE_MAX;
+	if (esc2 > MOTOR_THROTTLE_MAX)
+		esc2 = MOTOR_THROTTLE_MAX;
+	if (esc3 > MOTOR_THROTTLE_MAX)
+		esc3 = MOTOR_THROTTLE_MAX;
+	if (esc4 > MOTOR_THROTTLE_MAX)
+		esc4 = MOTOR_THROTTLE_MAX;
 //	}
 //	else
 //	{

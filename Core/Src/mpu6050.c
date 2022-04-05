@@ -1,9 +1,11 @@
-/*
- * bmp280.c
- *
- *  Created on: Mar 31, 2022
- *      Author: cardinal
- */
+/**
+ *******************************************************************************
+ * @file   bmp280.c
+ * @author Lasha Valishvili (cardinal_tm)
+ * @email  lvalishvili@icloud.com
+ * @date   Apr 1, 2022
+ *******************************************************************************
+ **/
 
 #include "mpu6050.h"
 #include <math.h>
@@ -65,7 +67,7 @@ uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx)
 	return 1;
 }
 
-void MPU6050_Read_Accel(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct)
+void MPU6050_Read_Accel(I2C_HandleTypeDef *I2Cx, SensorAcc *data)
 {
 	uint8_t Rec_Data[6];
 
@@ -73,21 +75,21 @@ void MPU6050_Read_Accel(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct)
 
 	HAL_I2C_Mem_Read(I2Cx, MPU6050_ADDR, ACCEL_XOUT_H_REG, 1, Rec_Data, 6, i2c_timeout);
 
-	DataStruct->Accel_X_RAW = (int16_t) (Rec_Data[0] << 8 | Rec_Data[1]);
-	DataStruct->Accel_Y_RAW = (int16_t) (Rec_Data[2] << 8 | Rec_Data[3]);
-	DataStruct->Accel_Z_RAW = (int16_t) (Rec_Data[4] << 8 | Rec_Data[5]);
+	data->X_RAW = (int16_t) (Rec_Data[0] << 8 | Rec_Data[1]);
+	data->Y_RAW = (int16_t) (Rec_Data[2] << 8 | Rec_Data[3]);
+	data->Z_RAW = (int16_t) (Rec_Data[4] << 8 | Rec_Data[5]);
 
 	/*** convert the RAW values into acceleration in 'g'
 	 we have to divide according to the Full scale value set in FS_SEL
 	 I have configured FS_SEL = 0. So I am dividing by 16384.0
 	 for more details check ACCEL_CONFIG Register              ****/
 
-	DataStruct->Ax = DataStruct->Accel_X_RAW / 16384.0;
-	DataStruct->Ay = DataStruct->Accel_Y_RAW / 16384.0;
-	DataStruct->Az = DataStruct->Accel_Z_RAW / Accel_Z_corrector;
+	data->X = data->X_RAW / 16384.0;
+	data->Y = data->Y_RAW / 16384.0;
+	data->Z = data->Z_RAW / Accel_Z_corrector;
 }
 
-void MPU6050_Read_Gyro(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct)
+void MPU6050_Read_Gyro(I2C_HandleTypeDef *I2Cx, SensorGyro *data)
 {
 	uint8_t Rec_Data[6];
 
@@ -95,21 +97,21 @@ void MPU6050_Read_Gyro(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct)
 
 	HAL_I2C_Mem_Read(I2Cx, MPU6050_ADDR, GYRO_XOUT_H_REG, 1, Rec_Data, 6, i2c_timeout);
 
-	DataStruct->Gyro_X_RAW = (int16_t) (Rec_Data[0] << 8 | Rec_Data[1]);
-	DataStruct->Gyro_Y_RAW = (int16_t) (Rec_Data[2] << 8 | Rec_Data[3]);
-	DataStruct->Gyro_Z_RAW = (int16_t) (Rec_Data[4] << 8 | Rec_Data[5]);
+	data->X_RAW = (int16_t) (Rec_Data[0] << 8 | Rec_Data[1]);
+	data->Y_RAW = (int16_t) (Rec_Data[2] << 8 | Rec_Data[3]);
+	data->Z_RAW = (int16_t) (Rec_Data[4] << 8 | Rec_Data[5]);
 
 	/*** convert the RAW values into dps (�/s)
 	 we have to divide according to the Full scale value set in FS_SEL
 	 I have configured FS_SEL = 0. So I am dividing by 131.0
 	 for more details check GYRO_CONFIG Register              ****/
 
-	DataStruct->Gx = DataStruct->Gyro_X_RAW / 131.0;
-	DataStruct->Gy = DataStruct->Gyro_Y_RAW / 131.0;
-	DataStruct->Gz = DataStruct->Gyro_Z_RAW / 131.0;
+	data->X = data->X_RAW / 131.0;
+	data->Y = data->Y_RAW / 131.0;
+	data->Z = data->Z_RAW / 131.0;
 }
 
-void MPU6050_Read_Temp(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct)
+void MPU6050_Read_Temp(I2C_HandleTypeDef *I2Cx, SensorTemp *data)
 {
 	uint8_t Rec_Data[2];
 	int16_t temp;
@@ -119,7 +121,7 @@ void MPU6050_Read_Temp(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct)
 	HAL_I2C_Mem_Read(I2Cx, MPU6050_ADDR, TEMP_OUT_H_REG, 1, Rec_Data, 2, i2c_timeout);
 
 	temp = (int16_t) (Rec_Data[0] << 8 | Rec_Data[1]);
-	DataStruct->Temperature = (float) ((int16_t) temp / (float) 340.0 + (float) 36.53);
+	data->Temperature = (float) ((int16_t) temp / (float) 340.0 + (float) 36.53);
 }
 
 void MPU6050_Read_All(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct)

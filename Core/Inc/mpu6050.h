@@ -1,6 +1,6 @@
 /**
  *******************************************************************************
- * @file   test.h
+ * @file   mpu6050.h
  * @author Lasha Valishvili (cardinal_tm)
  * @email  lvalishvili@icloud.com
  * @date   Apr 1, 2022
@@ -12,6 +12,7 @@
 
 #endif /* INC_GY521_H_ */
 
+#include "sensors.h"
 #include <stdint.h>
 #include "i2c.h"
 
@@ -51,11 +52,11 @@ typedef struct
 
 uint8_t MPU6050_Init(I2C_HandleTypeDef *I2Cx);
 
-void MPU6050_Read_Accel(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct);
+void MPU6050_Read_Accel(I2C_HandleTypeDef *I2Cx, SensorAcc *data);
 
-void MPU6050_Read_Gyro(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct);
+void MPU6050_Read_Gyro(I2C_HandleTypeDef *I2Cx, SensorGyro *data);
 
-void MPU6050_Read_Temp(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct);
+void MPU6050_Read_Temp(I2C_HandleTypeDef *I2Cx, SensorTemp *data);
 
 void MPU6050_Read_All(I2C_HandleTypeDef *I2Cx, MPU6050_t *DataStruct);
 
